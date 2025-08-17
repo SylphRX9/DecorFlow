@@ -12,6 +12,8 @@
       height: 100vh;
       background: #f5f5dc;
       font-family: Arial, sans-serif;
+      margin: 0;
+      overflow: hidden;
     }
 
     .envelope {
@@ -22,11 +24,7 @@
       border-radius: 10px;
       cursor: pointer;
       overflow: hidden;
-      transition: transform 0.5s ease;
-    }
-
-    .envelope.open {
-      transform: rotateX(15deg) scale(1.05);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.2);
     }
 
     .flap {
@@ -39,10 +37,7 @@
       clip-path: polygon(0 0, 50% 100%, 100% 0);
       transition: transform 0.7s ease;
       transform-origin: top;
-    }
-
-    .envelope.open .flap {
-      transform: rotateX(180deg);
+      z-index: 2;
     }
 
     .paper {
@@ -56,11 +51,8 @@
       box-shadow: 0 5px 15px rgba(0,0,0,0.2);
       text-align: center;
       padding: 20px;
-      transition: top 1s ease;
-    }
-
-    .envelope.open .paper {
-      top: 20%;
+      transition: top 1s ease, transform 1s ease, width 1s ease, height 1s ease, left 1s ease;
+      z-index: 1;
     }
 
     .paper h2 {
@@ -74,21 +66,47 @@
       margin-top: 10px;
       color: #555;
     }
+
+    /* Estado: sobre abierto (la hoja empieza a salir) */
+    .envelope.open .flap {
+      transform: rotateX(180deg);
+    }
+
+    .envelope.open .paper {
+      top: -20%;
+    }
+
+    /* Estado: hoja expandida a pantalla completa */
+    .paper.fullscreen {
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      border-radius: 0;
+      transform: none;
+      z-index: 10;
+    }
   </style>
 </head>
 <body>
 
   <div class="envelope" onclick="openEnvelope(this)">
     <div class="flap"></div>
-    <div class="paper">
+    <div class="paper" onclick="expandPaper(event, this)">
       <h2>🎉 ¡Sorpresa! 🎉</h2>
       <p>Estás invitado a un evento muy especial ✨</p>
+      <p>Haz click en la hoja para abrir el mensaje completo 📜</p>
     </div>
   </div>
 
   <script>
     function openEnvelope(el) {
-      el.classList.toggle("open");
+      el.classList.add("open");
+    }
+
+    function expandPaper(event, paper) {
+      event.stopPropagation(); // evitar que cierre el sobre al dar click
+      paper.classList.add("fullscreen");
     }
   </script>
 
