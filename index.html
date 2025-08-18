@@ -15,8 +15,8 @@
       overflow: hidden;
       font-family: Arial, sans-serif;
       color: white;
-      position: relative;
       flex-direction: column;
+      position: relative;
     }
 
     /* Pantalla de carga */
@@ -123,7 +123,7 @@
     #paper {
       display: none;
       position: absolute;
-      background: #f5deb3; /* Beige */
+      background: #f5deb3;
       color: #000;
       padding: 50px;
       border-radius: 20px;
@@ -161,25 +161,14 @@
     }
 
     /* Corazones de fondo */
-    .background-hearts {
+    .background-heart {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      grid-template-rows: repeat(5, 1fr);
-      z-index: 0;
-    }
-
-    .background-hearts svg {
       width: 50px;
       height: 50px;
       fill: #ff2d75;
       opacity: 0.4;
       animation: pulse 2s infinite;
-      margin: auto;
+      z-index: 0;
     }
   </style>
 </head>
@@ -200,21 +189,8 @@
     </div>
   </div>
 
-  <!-- Música de fondo (cambia src por tu MP3 de YouTube convertido) -->
-  <audio id="bg-music" autoplay loop>
-    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_1.mp3?filename=romantic-music-12345.mp3" type="audio/mpeg">
-  </audio>
-
-  <!-- Corazones de fondo -->
-  <div class="background-hearts">
-    <!-- Se repiten varios corazones -->
-    ${Array(25).fill(`<svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 
-      2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 
-      4.5 2.09C13.09 3.81 14.76 3 16.5 3 
-      19.58 3 22 5.42 22 8.5c0 3.78-3.4 
-      6.86-8.55 11.54L12 21.35z"/></svg>`).join("")}
-  </div>
-
+  <!-- Corazones de fondo (se generarán por JS) -->
+  
   <!-- Corazón principal -->
   <svg id="mainHeart" viewBox="0 0 24 24">
     <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 
@@ -241,8 +217,12 @@
   <!-- Sonido Pop -->
   <audio id="pop-sound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_9db0e1ce3f.mp3?filename=real-punch-in-the-face-233286.mp3"></audio>
 
+  <!-- Música de fondo -->
+  <audio id="bg-music" loop>
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_1.mp3?filename=romantic-music-12345.mp3" type="audio/mpeg">
+  </audio>
+
   <script>
-    let clicks = 0;
     const heart = document.getElementById("mainHeart");
     const progress = document.getElementById("progress");
     const progressContainer = document.getElementById("progress-container");
@@ -250,6 +230,8 @@
     const flash = document.getElementById("flash");
     const popSound = document.getElementById("pop-sound");
     const bgMusic = document.getElementById("bg-music");
+    let clicks = 0;
+    let musicStarted = false;
 
     // Pantalla de carga
     window.onload = () => {
@@ -257,41 +239,64 @@
       loadingBar.style.width = "100%";
       setTimeout(() => {
         document.getElementById("loadingScreen").style.display = "none";
-        bgMusic.play().catch(()=>console.log("Autoplay bloqueado, se activará al primer click"));
       }, 2000);
+      createBackgroundHearts();
     };
 
+    // Crear corazones de fondo dispersos
+    function createBackgroundHearts() {
+      for(let i=0;i<25;i++){
+        const h = document.createElementNS("http://www.w3.org/2000/svg","svg");
+        h.setAttribute("class","background-heart");
+        h.setAttribute("viewBox","0 0 24 24");
+        h.style.left = Math.random()*window.innerWidth + "px";
+        h.style.top = Math.random()*window.innerHeight + "px";
+        h.style.width = 30 + Math.random()*30 + "px";
+        h.style.height = h.style.width;
+        h.style.animationDuration = 1.5 + Math.random()*2 + "s";
+        const path = document.createElementNS("http://www.w3.org/2000/svg","path");
+        path.setAttribute("d","M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z");
+        h.appendChild(path);
+        document.body.appendChild(h);
+      }
+    }
+
+    // Click en corazón principal
     heart.addEventListener("click", () => {
       clicks++;
       heart.classList.add("pulse");
       document.body.classList.add("shake");
 
-      // Reproducir sonido
+      // Reproducir sonido pop
       popSound.currentTime = 0;
       popSound.play();
 
-      setTimeout(() => {
+      // Iniciar música al primer click
+      if(!musicStarted){
+        bgMusic.play().catch(()=>console.log("Autoplay bloqueado"));
+        musicStarted = true;
+      }
+
+      setTimeout(()=>{
         heart.classList.remove("pulse");
         document.body.classList.remove("shake");
-      }, 400);
+      },400);
 
-      let percent = Math.min((clicks / 10) * 100, 100);
+      const percent = Math.min((clicks/10)*100,100);
       progress.style.width = percent + "%";
 
-      if (percent === 100) {
+      if(percent===100){
         triggerFlash();
       }
     });
 
-    function triggerFlash() {
+    function triggerFlash(){
       flash.style.display = "block";
       heart.style.display = "none";
       progressContainer.style.display = "none";
       paper.style.display = "block";
 
-      setTimeout(() => {
-        flash.style.display = "none";
-      }, 3000);
+      setTimeout(()=>{ flash.style.display = "none"; },3000);
     }
   </script>
 </body>
