@@ -17,15 +17,16 @@
       font-family: Arial, sans-serif;
     }
 
-    /* Regalo */
+    /* Regalo (en perspectiva de lado) */
     #gift {
       width: 120px;
       height: 120px;
       background: #d63031;
       position: relative;
       cursor: pointer;
-      border-radius: 10px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+      border-radius: 8px;
+      box-shadow: 6px 6px 15px rgba(0,0,0,0.4);
+      transform: rotateY(20deg) rotateX(10deg);
     }
 
     #gift::before, #gift::after {
@@ -68,15 +69,15 @@
     /* Corazones */
     .heart {
       position: absolute;
-      font-size: 24px;
+      font-size: 40px; /* más grandes */
       color: #e91e63;
       animation: float 2s ease-out forwards, fall 3s linear forwards;
     }
 
     @keyframes float {
       0% { transform: scale(0.5) translateY(0); opacity: 0; }
-      50% { transform: scale(1.2) translateY(-80px); opacity: 1; }
-      100% { transform: scale(1) translateY(-150px); opacity: 1; }
+      50% { transform: scale(1.5) translateY(-100px); opacity: 1; }
+      100% { transform: scale(1.2) translateY(-180px); opacity: 1; }
     }
 
     @keyframes fall {
@@ -89,11 +90,12 @@
       display: none;
       position: absolute;
       background: #fff;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+      padding: 50px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
       text-align: center;
-      max-width: 300px;
+      max-width: 400px;
+      font-size: 20px;
       animation: showPaper 1s ease forwards;
     }
 
@@ -106,7 +108,7 @@
 <body>
 
   <div id="gift"></div>
-  <div class="progress-container">
+  <div class="progress-container" id="progress-container">
     <div class="progress-bar" id="progress"></div>
   </div>
 
@@ -119,6 +121,7 @@
     let clicks = 0;
     const gift = document.getElementById("gift");
     const progress = document.getElementById("progress");
+    const progressContainer = document.getElementById("progress-container");
     const paper = document.getElementById("paper");
 
     gift.addEventListener("click", () => {
@@ -133,9 +136,10 @@
 
     function explodeGift() {
       gift.style.display = "none";
+      progressContainer.style.display = "none";
 
-      // Crear corazones
-      for (let i = 0; i < 40; i++) {
+      // Crear más corazones
+      for (let i = 0; i < 80; i++) { // más cantidad
         let heart = document.createElement("div");
         heart.className = "heart";
         heart.innerHTML = "❤";
@@ -144,10 +148,10 @@
         heart.style.animationDelay = (Math.random() * 1) + "s";
         document.body.appendChild(heart);
 
-        setTimeout(() => { heart.remove(); }, 4000);
+        setTimeout(() => { heart.remove(); }, 5000);
       }
 
-      // Mostrar hoja después de los corazones
+      // Mostrar hoja después
       setTimeout(() => {
         paper.style.display = "block";
       }, 3000);
