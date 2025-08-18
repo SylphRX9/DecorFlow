@@ -12,10 +12,24 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      background: #000; /* Fondo negro */
+      background: #000;
       overflow: hidden;
       font-family: Arial, sans-serif;
       color: white;
+    }
+
+    /* Animación shake de la página */
+    .shake {
+      animation: shake 0.4s;
+    }
+
+    @keyframes shake {
+      0% { transform: translate(0, 0); }
+      20% { transform: translate(-10px, 0); }
+      40% { transform: translate(10px, 0); }
+      60% { transform: translate(-10px, 0); }
+      80% { transform: translate(10px, 0); }
+      100% { transform: translate(0, 0); }
     }
 
     /* Corazón principal */
@@ -56,13 +70,12 @@
       box-shadow: 0 0 25px #ff2d75;
     }
 
-    /* Corazones que caen */
+    /* Corazones que caen (sin glow) */
     .heart {
       position: absolute;
-      font-size: 60px; /* más grandes */
+      font-size: 60px;
       color: #ff2d75;
-      text-shadow: 0 0 20px #ff80b5, 0 0 40px #ff2d75, 0 0 80px #ff80b5;
-      top: -60px; /* nacen fuera de la pantalla */
+      top: -60px;
       animation: fall 4s linear forwards;
       pointer-events: none;
     }
@@ -115,7 +128,12 @@
     heart.addEventListener("click", () => {
       clicks++;
       heart.classList.add("pulse");
-      setTimeout(() => heart.classList.remove("pulse"), 400);
+      document.body.classList.add("shake");
+
+      setTimeout(() => {
+        heart.classList.remove("pulse");
+        document.body.classList.remove("shake");
+      }, 400);
 
       let percent = Math.min((clicks / 10) * 100, 100);
       progress.style.width = percent + "%";
