@@ -159,6 +159,28 @@
       80% { opacity: 1; }
       100% { opacity: 0; }
     }
+
+    /* Corazones de fondo */
+    .background-hearts {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-template-rows: repeat(5, 1fr);
+      z-index: 0;
+    }
+
+    .background-hearts svg {
+      width: 50px;
+      height: 50px;
+      fill: #ff2d75;
+      opacity: 0.4;
+      animation: pulse 2s infinite;
+      margin: auto;
+    }
   </style>
 </head>
 <body>
@@ -178,10 +200,20 @@
     </div>
   </div>
 
-  <!-- Música de fondo -->
-  <iframe id="bg-music" width="0" height="0" 
-    src="https://www.youtube.com/embed/ejXq2VcLxxQ?autoplay=1&loop=1&playlist=ejXq2VcLxxQ" 
-    frameborder="0" allow="autoplay"></iframe>
+  <!-- Música de fondo (cambia src por tu MP3 de YouTube convertido) -->
+  <audio id="bg-music" autoplay loop>
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_1.mp3?filename=romantic-music-12345.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- Corazones de fondo -->
+  <div class="background-hearts">
+    <!-- Se repiten varios corazones -->
+    ${Array(25).fill(`<svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 
+      2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 
+      4.5 2.09C13.09 3.81 14.76 3 16.5 3 
+      19.58 3 22 5.42 22 8.5c0 3.78-3.4 
+      6.86-8.55 11.54L12 21.35z"/></svg>`).join("")}
+  </div>
 
   <!-- Corazón principal -->
   <svg id="mainHeart" viewBox="0 0 24 24">
@@ -217,6 +249,7 @@
     const paper = document.getElementById("paper");
     const flash = document.getElementById("flash");
     const popSound = document.getElementById("pop-sound");
+    const bgMusic = document.getElementById("bg-music");
 
     // Pantalla de carga
     window.onload = () => {
@@ -224,6 +257,7 @@
       loadingBar.style.width = "100%";
       setTimeout(() => {
         document.getElementById("loadingScreen").style.display = "none";
+        bgMusic.play().catch(()=>console.log("Autoplay bloqueado, se activará al primer click"));
       }, 2000);
     };
 
@@ -231,6 +265,8 @@
       clicks++;
       heart.classList.add("pulse");
       document.body.classList.add("shake");
+
+      // Reproducir sonido
       popSound.currentTime = 0;
       popSound.play();
 
