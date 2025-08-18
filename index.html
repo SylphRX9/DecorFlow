@@ -1,301 +1,185 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sorpresa Interactiva</title>
-  <style>
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: #000;
-      overflow: hidden;
-      font-family: Arial, sans-serif;
-      color: white;
-      flex-direction: column;
-      position: relative;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sorpresa Interactiva</title>
+<style>
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #000;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    color: white;
+    flex-direction: column;
+    position: relative;
+  }
 
-    /* Pantalla de carga */
-    #loadingScreen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: black;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
+  /* Pantalla de carga */
+  #loadingScreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: black;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
 
-    .loading-heart {
-      width: 80px;
-      height: 80px;
-      fill: #ff2d75;
-      animation: pulse 1s infinite;
-    }
+  .loading-heart { width: 80px; height: 80px; fill: #ff2d75; animation: pulse 1s infinite; }
+  .loading-text { margin-top: 15px; font-size: 18px; color: #ff2d75; text-align: center; }
+  .loading-bar-container { margin-top: 15px; width: 70%; height: 12px; background: #222; border-radius: 10px; overflow: hidden; }
+  .loading-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #ff2d75, #ff80b5); box-shadow: 0 0 15px #ff2d75; transition: width 2s linear; }
 
-    .loading-text {
-      margin-top: 15px;
-      font-size: 18px;
-      color: #ff2d75;
-      text-align: center;
-    }
+  @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+  .shake { animation: shake 0.4s; }
+  @keyframes shake { 0%{transform:translate(0,0);}20%{transform:translate(-5px,0);}40%{transform:translate(5px,0);}60%{transform:translate(-5px,0);}80%{transform:translate(5px,0);}100%{transform:translate(0,0);} }
 
-    .loading-bar-container {
-      margin-top: 15px;
-      width: 70%;
-      height: 12px;
-      background: #222;
-      border-radius: 10px;
-      overflow: hidden;
-    }
+  #mainHeart { width: 120px; height: 120px; fill: #ff2d75; cursor: pointer; filter: drop-shadow(0 0 15px #ff80b5) drop-shadow(0 0 30px #ff2d75); transition: transform 0.2s ease; z-index:2; }
+  .pulse { animation: pulse 0.4s ease; }
 
-    .loading-bar {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, #ff2d75, #ff80b5);
-      box-shadow: 0 0 15px #ff2d75;
-      transition: width 2s linear;
-    }
+  .progress-container { width: 70%; height: 18px; background: #222; border-radius: 15px; margin-top: 15px; overflow: hidden; box-shadow: 0 0 15px #ff2d75; z-index:2; }
+  .progress-bar { width:0%; height:100%; background: linear-gradient(90deg, #ff2d75, #ff80b5); transition: width 0.3s; box-shadow: 0 0 20px #ff2d75; }
 
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.2); }
-      100% { transform: scale(1); }
-    }
+  #paper { display:none; position:absolute; background:#f5deb3; color:#000; padding:25px; border-radius:15px; box-shadow:0 0 20px #fff,0 0 40px #ff2d75; text-align:center; max-width:90%; font-size:18px; animation:showPaper 1s ease forwards; z-index:3; }
 
-    .shake {
-      animation: shake 0.4s;
-    }
+  /* Botón de pausa/reproducción */
+  #pauseBtn { position:absolute; top:5px; right:5px; background:#ff2d75; color:white; border:none; border-radius:8px; padding:8px 14px; cursor:pointer; z-index:4; font-weight:bold; font-size:18px; }
 
-    @keyframes shake {
-      0% { transform: translate(0,0); }
-      20% { transform: translate(-5px,0); }
-      40% { transform: translate(5px,0); }
-      60% { transform: translate(-5px,0); }
-      80% { transform: translate(5px,0); }
-      100% { transform: translate(0,0); }
-    }
+  @keyframes showPaper { from{opacity:0;transform:scale(0.5);} to{opacity:1;transform:scale(1);} }
 
-    /* Corazón principal */
-    #mainHeart {
-      width: 120px;
-      height: 120px;
-      fill: #ff2d75;
-      cursor: pointer;
-      filter: drop-shadow(0 0 15px #ff80b5) drop-shadow(0 0 30px #ff2d75);
-      transition: transform 0.2s ease;
-      z-index: 2;
-    }
+  #flash { display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:white; z-index:5; animation: flash 3s ease; }
+  @keyframes flash { 0%{opacity:0;}20%{opacity:1;}80%{opacity:1;}100%{opacity:0;} }
 
-    .pulse {
-      animation: pulse 0.4s ease;
-    }
+  .background-heart { position:absolute; width:25px; height:25px; fill:#ff2d75; opacity:0.4; animation:pulse 2s infinite; z-index:0; }
 
-    /* Barra */
-    .progress-container {
-      width: 70%;
-      height: 18px;
-      background: #222;
-      border-radius: 15px;
-      margin-top: 15px;
-      overflow: hidden;
-      box-shadow: 0 0 15px #ff2d75;
-      z-index: 2;
+  @media(max-width:500px){
+    #mainHeart{width:90px;height:90px;}
+    .progress-container{width:90%;height:15px;}
+    #paper{padding:15px;font-size:16px;}
+    .loading-heart{width:60px;height:60px;}
+    .loading-text{font-size:16px;}
+    .loading-bar-container{width:90%;height:10px;}
+    /* Botón más grande y centrado en móviles */
+    #pauseBtn{
+      top:10px;
+      right:auto;
+      left:50%;
+      transform:translateX(-50%);
+      padding:12px 20px;
+      font-size:22px;
+      border-radius:12px;
     }
-
-    .progress-bar {
-      width: 0%;
-      height: 100%;
-      background: linear-gradient(90deg, #ff2d75, #ff80b5);
-      transition: width 0.3s;
-      box-shadow: 0 0 20px #ff2d75;
-    }
-
-    /* Hoja */
-    #paper {
-      display: none;
-      position: absolute;
-      background: #f5deb3;
-      color: #000;
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 0 20px #fff, 0 0 40px #ff2d75;
-      text-align: center;
-      max-width: 90%;
-      font-size: 18px;
-      animation: showPaper 1s ease forwards;
-      z-index: 3;
-    }
-
-    @keyframes showPaper {
-      from { opacity: 0; transform: scale(0.5); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
-    /* Flash blanco */
-    #flash {
-      display: none;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: white;
-      z-index: 5;
-      animation: flash 3s ease;
-    }
-
-    @keyframes flash {
-      0% { opacity: 0; }
-      20% { opacity: 1; }
-      80% { opacity: 1; }
-      100% { opacity: 0; }
-    }
-
-    /* Corazones de fondo */
-    .background-heart {
-      position: absolute;
-      width: 25px;
-      height: 25px;
-      fill: #ff2d75;
-      opacity: 0.4;
-      animation: pulse 2s infinite;
-      z-index: 0;
-    }
-
-    /* Media queries para móviles */
-    @media (max-width: 500px) {
-      #mainHeart { width: 90px; height: 90px; }
-      .progress-container { width: 90%; height: 15px; }
-      #paper { padding: 15px; font-size: 16px; }
-      .loading-heart { width: 60px; height: 60px; }
-      .loading-text { font-size: 16px; }
-      .loading-bar-container { width: 90%; height: 10px; }
-    }
-  </style>
+  }
+</style>
 </head>
 <body>
 
-  <!-- Pantalla de carga -->
-  <div id="loadingScreen">
-    <svg class="loading-heart" viewBox="0 0 24 24">
-      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 
-      2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 
-      4.5 2.09C13.09 3.81 14.76 3 16.5 3 
-      19.58 3 22 5.42 22 8.5c0 3.78-3.4 
-      6.86-8.55 11.54L12 21.35z"/>
-    </svg>
-    <div class="loading-text">Cargando...</div>
-    <div class="loading-bar-container">
-      <div class="loading-bar"></div>
-    </div>
-  </div>
+<div id="loadingScreen">
+  <svg class="loading-heart" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+  <div class="loading-text">Cargando...</div>
+  <div class="loading-bar-container"><div class="loading-bar"></div></div>
+</div>
 
-  <!-- Corazones de fondo -->
-  
-  <!-- Corazón principal -->
-  <svg id="mainHeart" viewBox="0 0 24 24">
-    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 
-    2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 
-    4.5 2.09C13.09 3.81 14.76 3 16.5 3 
-    19.58 3 22 5.42 22 8.5c0 3.78-3.4 
-    6.86-8.55 11.54L12 21.35z"/>
-  </svg>
+<svg id="mainHeart" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
 
-  <!-- Barra -->
-  <div class="progress-container" id="progress-container">
-    <div class="progress-bar" id="progress"></div>
-  </div>
+<div class="progress-container" id="progress-container"><div class="progress-bar" id="progress"></div></div>
+<div id="flash"></div>
 
-  <!-- Flash -->
-  <div id="flash"></div>
+<div id="paper">
+  <button id="pauseBtn">⏸</button>
+  <h2>💌 ¡Sorpresa!</h2>
+  <p>Este es tu mensaje especial ✨</p>
+</div>
 
-  <!-- Carta -->
-  <div id="paper">
-    <h2>💌 ¡Sorpresa!</h2>
-    <p>Este es tu mensaje especial ✨</p>
-  </div>
+<audio id="pop-sound" src="tap.mp3"></audio>
+<audio id="bg-music" loop>
+  <source src="Defondo.mp3" type="audio/mpeg">
+</audio>
+<audio id="explosion" src="Explosion.mp3"></audio>
 
-  <!-- Sonido Pop -->
-  <audio id="pop-sound" src="tap.mp3"></audio>
+<script>
+const heart = document.getElementById("mainHeart");
+const progress = document.getElementById("progress");
+const progressContainer = document.getElementById("progress-container");
+const paper = document.getElementById("paper");
+const flash = document.getElementById("flash");
+const popSound = document.getElementById("pop-sound");
+const bgMusic = document.getElementById("bg-music");
+const explosion = document.getElementById("explosion");
+const pauseBtn = document.getElementById("pauseBtn");
+let clicks = 0;
 
-  <!-- Música de fondo -->
-  <audio id="bg-music" autoplay loop>
-    <source src="Defondo.mp3" type="audio/mpeg">
-  </audio>
+window.onload = () => {
+  document.querySelector(".loading-bar").style.width = "100%";
+  setTimeout(()=>{ document.getElementById("loadingScreen").style.display="none"; },2000);
+  createBackgroundHearts();
+};
 
-  <script>
-    const heart = document.getElementById("mainHeart");
-    const progress = document.getElementById("progress");
-    const progressContainer = document.getElementById("progress-container");
-    const paper = document.getElementById("paper");
-    const flash = document.getElementById("flash");
-    const popSound = document.getElementById("pop-sound");
-    const bgMusic = document.getElementById("bg-music");
-    let clicks = 0;
-    let musicStarted = false;
+function createBackgroundHearts(){
+  for(let i=0;i<25;i++){
+    const h=document.createElementNS("http://www.w3.org/2000/svg","svg");
+    h.setAttribute("class","background-heart");
+    h.setAttribute("viewBox","0 0 24 24");
+    h.style.left=Math.random()*window.innerWidth+"px";
+    h.style.top=Math.random()*window.innerHeight+"px";
+    h.style.width=15+Math.random()*20+"px";
+    h.style.height=h.style.width;
+    h.style.animationDuration=1.5+Math.random()*2+"s";
+    const path=document.createElementNS("http://www.w3.org/2000/svg","path");
+    path.setAttribute("d","M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z");
+    h.appendChild(path);
+    document.body.appendChild(h);
+  }
+}
 
-    window.onload = () => {
-      const loadingBar = document.querySelector(".loading-bar");
-      loadingBar.style.width = "100%";
-      setTimeout(() => {
-        document.getElementById("loadingScreen").style.display = "none";
-      }, 2000);
-      createBackgroundHearts();
-    };
+heart.addEventListener("click",()=>{
+  clicks++;
+  heart.classList.add("pulse");
+  document.body.classList.add("shake");
+  popSound.currentTime=0;
+  popSound.play();
+  setTimeout(()=>{ heart.classList.remove("pulse"); document.body.classList.remove("shake"); },400);
+  const percent=Math.min((clicks/10)*100,100);
+  progress.style.width=percent+"%";
+  if(percent===100) triggerFlash();
+});
 
-    function createBackgroundHearts() {
-      for(let i=0;i<25;i++){
-        const h = document.createElementNS("http://www.w3.org/2000/svg","svg");
-        h.setAttribute("class","background-heart");
-        h.setAttribute("viewBox","0 0 24 24");
-        h.style.left = Math.random()*window.innerWidth + "px";
-        h.style.top = Math.random()*window.innerHeight + "px";
-        h.style.width = 15 + Math.random()*20 + "px";
-        h.style.height = h.style.width;
-        h.style.animationDuration = 1.5 + Math.random()*2 + "s";
-        const path = document.createElementNS("http://www.w3.org/2000/svg","path");
-        path.setAttribute("d","M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z");
-        h.appendChild(path);
-        document.body.appendChild(h);
-      }
-    }
+function triggerFlash(){
+  explosion.currentTime=0;
+  explosion.play();
+  flash.style.display="block";
+  heart.style.display="none";
+  progressContainer.style.display="none";
+  paper.style.display="block";
+  setTimeout(()=>{
+    flash.style.display="none";
+    bgMusic.currentTime=0;
+    bgMusic.play();
+  },3000);
+}
 
-    heart.addEventListener("click", () => {
-      clicks++;
-      heart.classList.add("pulse");
-      document.body.classList.add("shake");
-      popSound.currentTime = 0;
-      popSound.play();
-      if(!musicStarted){
-        bgMusic.play().catch(()=>console.log("Autoplay bloqueado"));
-        musicStarted = true;
-      }
-      setTimeout(()=>{
-        heart.classList.remove("pulse");
-        document.body.classList.remove("shake");
-      },400);
-
-      const percent = Math.min((clicks/10)*100,100);
-      progress.style.width = percent + "%";
-      if(percent===100){ triggerFlash(); }
-    });
-
-    function triggerFlash(){
-      flash.style.display = "block";
-      heart.style.display = "none";
-      progressContainer.style.display = "none";
-      paper.style.display = "block";
-      setTimeout(()=>{ flash.style.display = "none"; },3000);
-    }
-  </script>
+// Botón de pausa/reproducción
+let musicPaused = false;
+pauseBtn.addEventListener("click",()=>{
+  if(musicPaused){
+    bgMusic.play();
+    pauseBtn.textContent="⏸";
+    musicPaused=false;
+  }else{
+    bgMusic.pause();
+    pauseBtn.textContent="▶";
+    musicPaused=true;
+  }
+});
+</script>
 </body>
 </html>
