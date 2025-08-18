@@ -51,15 +51,37 @@
 
   #paper { display:none; position:absolute; background:#f5deb3; color:#000; padding:25px; border-radius:15px; box-shadow:0 0 20px #fff,0 0 40px #ff2d75; text-align:center; max-width:90%; font-size:18px; animation:showPaper 1s ease forwards; z-index:3; }
 
-  /* Botón de pausa/reproducción */
-  #pauseBtn { position:absolute; top:5px; right:5px; background:#ff2d75; color:white; border:none; border-radius:8px; padding:8px 14px; cursor:pointer; z-index:4; font-weight:bold; font-size:18px; }
+  /* Botón de pausa/reproducción fijo */
+  #pauseBtn {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: #ff2d75;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 14px;
+    cursor: pointer;
+    z-index:10;
+    font-weight: bold;
+    font-size: 18px;
+    display: none; /* se mostrará después del flash */
+  }
 
   @keyframes showPaper { from{opacity:0;transform:scale(0.5);} to{opacity:1;transform:scale(1);} }
 
   #flash { display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:white; z-index:5; animation: flash 3s ease; }
   @keyframes flash { 0%{opacity:0;}20%{opacity:1;}80%{opacity:1;}100%{opacity:0;} }
 
-  .background-heart { position:absolute; width:25px; height:25px; fill:#ff2d75; opacity:0.4; animation:pulse 2s infinite; z-index:0; }
+  .background-heart { position:absolute; width:25px; height:25px; fill:#ff2d75; opacity:0.4; animation: pulse 2s infinite, float 6s ease-in-out infinite; z-index:0; }
+
+  @keyframes float {
+    0% { transform: translate(0,0); }
+    25% { transform: translate(10px,-5px); }
+    50% { transform: translate(-10px,5px); }
+    75% { transform: translate(5px,-5px); }
+    100% { transform: translate(0,0); }
+  }
 
   @media(max-width:500px){
     #mainHeart{width:90px;height:90px;}
@@ -68,7 +90,6 @@
     .loading-heart{width:60px;height:60px;}
     .loading-text{font-size:16px;}
     .loading-bar-container{width:90%;height:10px;}
-    /* Botón más grande y centrado en móviles */
     #pauseBtn{
       top:10px;
       right:auto;
@@ -95,10 +116,11 @@
 <div id="flash"></div>
 
 <div id="paper">
-  <button id="pauseBtn">⏸</button>
   <h2>💌 ¡Sorpresa!</h2>
   <p>Este es tu mensaje especial ✨</p>
 </div>
+
+<button id="pauseBtn">⏸</button>
 
 <audio id="pop-sound" src="tap.mp3"></audio>
 <audio id="bg-music" loop>
@@ -133,7 +155,7 @@ function createBackgroundHearts(){
     h.style.top=Math.random()*window.innerHeight+"px";
     h.style.width=15+Math.random()*20+"px";
     h.style.height=h.style.width;
-    h.style.animationDuration=1.5+Math.random()*2+"s";
+    h.style.animationDuration=(1.5+Math.random()*2)+"s, "+(5+Math.random()*5)+"s";
     const path=document.createElementNS("http://www.w3.org/2000/svg","path");
     path.setAttribute("d","M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z");
     h.appendChild(path);
@@ -164,6 +186,7 @@ function triggerFlash(){
     flash.style.display="none";
     bgMusic.currentTime=0;
     bgMusic.play();
+    pauseBtn.style.display="block"; // mostrar el botón después del flash
   },3000);
 }
 
