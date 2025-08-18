@@ -9,7 +9,6 @@
       margin: 0;
       height: 100vh;
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
       background: #000;
@@ -19,8 +18,59 @@
       position: relative;
     }
 
+    /* Pantalla de carga */
+    #loadingScreen {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: black;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+    }
+
+    #loadingHeart {
+      font-size: 100px;
+      color: #ff2d75;
+      text-shadow: 0 0 20px #ff80b5, 0 0 40px #ff2d75;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    #loadingText {
+      margin-top: 20px;
+      font-size: 24px;
+      color: #ff2d75;
+      text-shadow: 0 0 10px #ff80b5;
+    }
+
+    .loading-bar-container {
+      margin-top: 20px;
+      width: 60%;
+      height: 20px;
+      background: #222;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 0 15px #ff2d75;
+    }
+
+    .loading-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #ff2d75, #ff80b5);
+      transition: width 2s linear;
+    }
+
     /* Animación shake */
     .shake { animation: shake 0.4s; }
+
     @keyframes shake {
       0% { transform: translate(0, 0); }
       20% { transform: translate(-10px, 0); }
@@ -32,38 +82,16 @@
 
     /* Corazón principal */
     #mainHeart {
-      width: 150px;
-      height: 150px;
+      font-size: 150px;
       cursor: pointer;
-      fill: #ff2d75;
-      filter: drop-shadow(0 0 20px #ff80b5) drop-shadow(0 0 40px #ff2d75);
+      color: #ff2d75;
+      text-shadow: 0 0 20px #ff80b5, 0 0 40px #ff2d75;
       transition: transform 0.2s ease;
       z-index: 2;
-      position: relative;
+      display: none; /* Oculto hasta que cargue */
     }
-
-    /* Texto "Push" */
-    #heartText {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 30px;
-      font-weight: bold;
-      color: white;
-      text-shadow: 0 0 10px black;
-      opacity: 0;
-      transition: opacity 0.3s;
-      pointer-events: none;
-    }
-    .showText { opacity: 1; }
 
     .pulse { animation: pulse 0.4s ease; }
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.3); }
-      100% { transform: scale(1); }
-    }
 
     /* Barra */
     .progress-container {
@@ -75,7 +103,9 @@
       overflow: hidden;
       box-shadow: 0 0 20px #ff2d75;
       z-index: 2;
+      display: none; /* Oculto hasta que cargue */
     }
+
     .progress-bar {
       width: 0%;
       height: 100%;
@@ -99,23 +129,23 @@
       animation: showPaper 1s ease forwards;
       z-index: 3;
     }
+
     @keyframes showPaper {
       from { opacity: 0; transform: scale(0.5); }
       to { opacity: 1; transform: scale(1); }
     }
 
-    /* Flash */
+    /* Flash blanco */
     #flash {
       display: none;
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       background: white;
       z-index: 5;
       animation: flash 3s ease;
     }
+
     @keyframes flash {
       0% { opacity: 0; }
       20% { opacity: 1; }
@@ -126,12 +156,12 @@
     /* Corazones flotando */
     .floating-heart {
       position: absolute;
-      width: 30px;
-      height: 30px;
-      fill: #ff2d75;
-      opacity: 0.8;
+      color: #ff2d75;
+      font-size: 30px;
       animation: float 3s infinite ease-in-out;
+      opacity: 0.8;
     }
+
     @keyframes float {
       0% { transform: scale(1) translateY(0); }
       50% { transform: scale(1.3) translateY(-20px); }
@@ -141,50 +171,67 @@
 </head>
 <body>
 
-  <div id="mainHeartWrapper" style="position: relative;">
-    <svg id="mainHeart" viewBox="0 0 24 24">
-      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 
-               2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09
-               C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5
-               c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-    </svg>
-    <div id="heartText">Push</div>
+  <!-- Pantalla de carga -->
+  <div id="loadingScreen">
+    <div id="loadingHeart">❤</div>
+    <div id="loadingText">Cargando...</div>
+    <div class="loading-bar-container">
+      <div class="loading-bar" id="loadingBar"></div>
+    </div>
   </div>
 
+  <!-- Corazón principal -->
+  <div id="mainHeart">❤</div>
+
+  <!-- Barra de progreso -->
   <div class="progress-container" id="progress-container">
     <div class="progress-bar" id="progress"></div>
   </div>
 
   <div id="flash"></div>
 
+  <!-- Hoja -->
   <div id="paper">
     <h2>💌 ¡Sorpresa!</h2>
     <p>Este es tu mensaje especial ✨</p>
-    <!-- Música de fondo -->
-    <iframe width="0" height="0" src="https://www.youtube.com/embed/2nNR4EsOgKE?autoplay=1" frameborder="0" allow="autoplay"></iframe>
   </div>
 
-  <!-- Sonido de explosión -->
-  <audio id="explosionSound" src="https://www.soundjay.com/mechanical/sounds/explosion-01.mp3" preload="auto"></audio>
+  <!-- Sonido pop -->
+  <audio id="popSound" src="https://www.myinstants.com/media/sounds/pop-cat.mp3"></audio>
 
   <script>
     let clicks = 0;
     const heart = document.getElementById("mainHeart");
-    const heartText = document.getElementById("heartText");
     const progress = document.getElementById("progress");
     const progressContainer = document.getElementById("progress-container");
     const paper = document.getElementById("paper");
     const flash = document.getElementById("flash");
-    const explosionSound = document.getElementById("explosionSound");
+    const loadingScreen = document.getElementById("loadingScreen");
+    const loadingBar = document.getElementById("loadingBar");
+    const popSound = document.getElementById("popSound");
 
+    // Pantalla de carga
+    window.onload = () => {
+      setTimeout(() => {
+        loadingBar.style.width = "100%";
+      }, 50);
+
+      setTimeout(() => {
+        loadingScreen.style.display = "none";
+        heart.style.display = "block";
+        progressContainer.style.display = "block";
+        createFloatingHearts();
+      }, 2000);
+    };
+
+    // Click en corazón principal
     heart.addEventListener("click", () => {
       clicks++;
+      popSound.currentTime = 0;
+      popSound.play();
+
       heart.classList.add("pulse");
       document.body.classList.add("shake");
-
-      // Mostrar "Push"
-      heartText.classList.add("showText");
-      setTimeout(() => heartText.classList.remove("showText"), 500);
 
       setTimeout(() => {
         heart.classList.remove("pulse");
@@ -201,42 +248,29 @@
 
     function triggerFlash() {
       flash.style.display = "block";
+
       heart.style.display = "none";
       progressContainer.style.display = "none";
-      heartText.style.display = "none";
       paper.style.display = "block";
-
-      // 💥 Sonido de explosión
-      explosionSound.play();
 
       setTimeout(() => {
         flash.style.display = "none";
       }, 3000);
     }
 
-    // Corazones flotando
+    // Corazones flotando aleatorios
     function createFloatingHearts() {
       for (let i = 0; i < 20; i++) {
-        let h = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-        h.setAttribute("class", "floating-heart");
-        h.setAttribute("viewBox", "0 0 24 24");
+        let h = document.createElement("div");
+        h.className = "floating-heart";
+        h.innerHTML = "❤";
         h.style.left = Math.random() * window.innerWidth + "px";
         h.style.top = Math.random() * window.innerHeight + "px";
-        h.style.width = (20 + Math.random() * 30) + "px";
-        h.style.height = h.style.width;
+        h.style.fontSize = (20 + Math.random() * 30) + "px";
         h.style.animationDuration = (2 + Math.random() * 2) + "s";
-
-        let path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        path.setAttribute("d", "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 \
-          2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09 \
-          C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5 \
-          c0 3.78-3.4 6.86-8.55 11.54L12 21.35z");
-        h.appendChild(path);
-
         document.body.appendChild(h);
       }
     }
-    createFloatingHearts();
   </script>
 </body>
 </html>
