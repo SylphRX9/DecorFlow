@@ -17,36 +17,22 @@
       font-family: Arial, sans-serif;
     }
 
-    /* Regalo (en perspectiva de lado) */
-    #gift {
-      width: 120px;
-      height: 120px;
-      background: #d63031;
-      position: relative;
+    /* Corazón principal */
+    #mainHeart {
+      font-size: 120px;
       cursor: pointer;
-      border-radius: 8px;
-      box-shadow: 6px 6px 15px rgba(0,0,0,0.4);
-      transform: rotateY(20deg) rotateX(10deg);
+      color: #e91e63;
+      transition: transform 0.2s ease;
     }
 
-    #gift::before, #gift::after {
-      content: "";
-      position: absolute;
-      background: #fff;
+    .pulse {
+      animation: pulse 0.4s ease;
     }
 
-    #gift::before {
-      width: 20px;
-      height: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-
-    #gift::after {
-      height: 20px;
-      width: 100%;
-      top: 50%;
-      transform: translateY(-50%);
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.3); }
+      100% { transform: scale(1); }
     }
 
     /* Barra */
@@ -66,23 +52,18 @@
       transition: width 0.3s;
     }
 
-    /* Corazones */
+    /* Corazones que caen */
     .heart {
       position: absolute;
-      font-size: 40px; /* más grandes */
+      font-size: 35px;
       color: #e91e63;
-      animation: float 2s ease-out forwards, fall 3s linear forwards;
-    }
-
-    @keyframes float {
-      0% { transform: scale(0.5) translateY(0); opacity: 0; }
-      50% { transform: scale(1.5) translateY(-100px); opacity: 1; }
-      100% { transform: scale(1.2) translateY(-180px); opacity: 1; }
+      top: -50px; /* nacen fuera de la pantalla */
+      animation: fall 4s linear forwards;
     }
 
     @keyframes fall {
-      0% { top: 0; opacity: 1; }
-      100% { top: 100vh; opacity: 0; }
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(110vh); opacity: 0; }
     }
 
     /* Hoja */
@@ -107,7 +88,7 @@
 </head>
 <body>
 
-  <div id="gift"></div>
+  <div id="mainHeart">❤</div>
   <div class="progress-container" id="progress-container">
     <div class="progress-bar" id="progress"></div>
   </div>
@@ -119,42 +100,45 @@
 
   <script>
     let clicks = 0;
-    const gift = document.getElementById("gift");
+    const heart = document.getElementById("mainHeart");
     const progress = document.getElementById("progress");
     const progressContainer = document.getElementById("progress-container");
     const paper = document.getElementById("paper");
 
-    gift.addEventListener("click", () => {
+    heart.addEventListener("click", () => {
       clicks++;
+      heart.classList.add("pulse");
+      setTimeout(() => heart.classList.remove("pulse"), 400);
+
       let percent = Math.min((clicks / 10) * 100, 100);
       progress.style.width = percent + "%";
 
       if (percent === 100) {
-        explodeGift();
+        explodeHeart();
       }
     });
 
-    function explodeGift() {
-      gift.style.display = "none";
+    function explodeHeart() {
+      heart.style.display = "none";
       progressContainer.style.display = "none";
 
-      // Crear más corazones
-      for (let i = 0; i < 80; i++) { // más cantidad
-        let heart = document.createElement("div");
-        heart.className = "heart";
-        heart.innerHTML = "❤";
-        heart.style.left = Math.random() * window.innerWidth + "px";
-        heart.style.top = "0px";
-        heart.style.animationDelay = (Math.random() * 1) + "s";
-        document.body.appendChild(heart);
+      // Lluvia de corazones desde arriba
+      for (let i = 0; i < 80; i++) {
+        let h = document.createElement("div");
+        h.className = "heart";
+        h.innerHTML = "❤";
+        h.style.left = Math.random() * window.innerWidth + "px";
+        h.style.fontSize = (30 + Math.random() * 20) + "px";
+        h.style.animationDelay = (Math.random() * 2) + "s";
+        document.body.appendChild(h);
 
-        setTimeout(() => { heart.remove(); }, 5000);
+        setTimeout(() => { h.remove(); }, 5000);
       }
 
       // Mostrar hoja después
       setTimeout(() => {
         paper.style.display = "block";
-      }, 3000);
+      }, 4000);
     }
   </script>
 </body>
