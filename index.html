@@ -57,16 +57,22 @@
     top: 10px;
     right: 10px;
     background: #ff2d75;
-    color: white;
     border: none;
-    border-radius: 8px;
-    padding: 8px 14px;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
     cursor: pointer;
     z-index:10;
-    font-weight: bold;
-    font-size: 18px;
     display: none; /* se mostrará después del flash */
+    filter: drop-shadow(0 0 10px #ff80b5) drop-shadow(0 0 20px #ff2d75);
+    transition: transform 0.2s ease, filter 0.2s ease;
   }
+  #pauseBtn:hover {
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 15px #ff80b5) drop-shadow(0 0 30px #ff2d75);
+  }
+
+  #pauseIcon { width: 24px; height: 24px; fill: white; }
 
   @keyframes showPaper { from{opacity:0;transform:scale(0.5);} to{opacity:1;transform:scale(1);} }
 
@@ -95,10 +101,10 @@
       right:auto;
       left:50%;
       transform:translateX(-50%);
-      padding:12px 20px;
-      font-size:22px;
-      border-radius:12px;
+      width:60px;
+      height:60px;
     }
+    #pauseIcon{width:28px;height:28px;}
   }
 </style>
 </head>
@@ -120,7 +126,12 @@
   <p>Este es tu mensaje especial ✨</p>
 </div>
 
-<button id="pauseBtn">⏸</button>
+<button id="pauseBtn">
+  <svg id="pauseIcon" viewBox="0 0 24 24">
+    <rect x="6" y="4" width="4" height="16"/>
+    <rect x="14" y="4" width="4" height="16"/>
+  </svg>
+</button>
 
 <audio id="pop-sound" src="tap.mp3"></audio>
 <audio id="bg-music" loop>
@@ -138,6 +149,7 @@ const popSound = document.getElementById("pop-sound");
 const bgMusic = document.getElementById("bg-music");
 const explosion = document.getElementById("explosion");
 const pauseBtn = document.getElementById("pauseBtn");
+const pauseIcon = document.getElementById("pauseIcon");
 let clicks = 0;
 
 window.onload = () => {
@@ -190,16 +202,16 @@ function triggerFlash(){
   },3000);
 }
 
-// Botón de pausa/reproducción
+// Botón de pausa/reproducción con SVG dinámico
 let musicPaused = false;
 pauseBtn.addEventListener("click",()=>{
   if(musicPaused){
     bgMusic.play();
-    pauseBtn.textContent="⏸";
+    pauseIcon.innerHTML = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>'; // pause
     musicPaused=false;
   }else{
     bgMusic.pause();
-    pauseBtn.textContent="▶";
+    pauseIcon.innerHTML = '<polygon points="6,4 20,12 6,20"/>'; // play
     musicPaused=true;
   }
 });
