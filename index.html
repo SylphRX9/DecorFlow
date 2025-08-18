@@ -1,189 +1,204 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sorpresa Interactiva</title>
-<style>
-body {
-  margin: 0;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background: #000;
-  overflow: hidden;
-  font-family: Arial, sans-serif;
-  color: white;
-  position: relative;
-}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sorpresa Interactiva</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: #000;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      color: white;
+      position: relative;
+    }
 
-/* Animación shake */
-.shake {
-  animation: shake 0.4s;
-}
-@keyframes shake {
-  0% { transform: translate(0,0); }
-  20% { transform: translate(-10px,0); }
-  40% { transform: translate(10px,0); }
-  60% { transform: translate(-10px,0); }
-  80% { transform: translate(10px,0); }
-  100% { transform: translate(0,0); }
-}
+    /* Animación shake */
+    .shake {
+      animation: shake 0.4s;
+    }
 
-/* Corazón principal */
-#mainHeart {
-  font-size: 150px;
-  cursor: pointer;
-  color: #ff2d75;
-  text-shadow: 0 0 20px #ff80b5, 0 0 40px #ff2d75;
-  transition: transform 0.2s ease;
-  z-index: 2;
-}
+    @keyframes shake {
+      0% { transform: translate(0, 0); }
+      20% { transform: translate(-10px, 0); }
+      40% { transform: translate(10px, 0); }
+      60% { transform: translate(-10px, 0); }
+      80% { transform: translate(10px, 0); }
+      100% { transform: translate(0, 0); }
+    }
 
-.pulse {
-  animation: pulse 0.4s ease;
-}
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.3); }
-  100% { transform: scale(1); }
-}
+    /* Corazón principal */
+    #mainHeart {
+      font-size: 150px;
+      cursor: pointer;
+      color: #ff2d75;
+      text-shadow: 0 0 20px #ff80b5, 0 0 40px #ff2d75;
+      transition: transform 0.2s ease;
+      z-index: 2;
+    }
 
-/* Barra */
-.progress-container {
-  width: 80%;
-  height: 25px;
-  background: #222;
-  border-radius: 15px;
-  margin-top: 20px;
-  overflow: hidden;
-  box-shadow: 0 0 20px #ff2d75;
-  z-index: 2;
-}
-.progress-bar {
-  width: 0%;
-  height: 100%;
-  background: linear-gradient(90deg, #ff2d75, #ff80b5);
-  transition: width 0.3s;
-  box-shadow: 0 0 25px #ff2d75;
-}
+    .pulse {
+      animation: pulse 0.4s ease;
+    }
 
-/* Hoja */
-#paper {
-  opacity: 0;
-  position: absolute;
-  background-color: #f5deb3; /* Beige */
-  color: #000;
-  padding: 50px;
-  border-radius: 20px;
-  box-shadow: 0 0 30px rgba(255,255,255,0.5), 0 0 60px rgba(255,45,117,0.5);
-  text-align: center;
-  max-width: 450px;
-  font-size: 22px;
-  z-index: 3;
-  transition: opacity 0.5s ease;
-}
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.3); }
+      100% { transform: scale(1); }
+    }
 
-/* Flash blanco */
-#flash {
-  opacity: 0;
-  visibility: hidden;
-  position: absolute;
-  top:0; left:0;
-  width:100%;
-  height:100%;
-  background:white;
-  z-index:5;
-  transition: opacity 0.1s ease;
-  pointer-events: none; /* <--- Esto permite hacer click debajo */
-}
+    /* Barra */
+    .progress-container {
+      width: 80%;
+      height: 25px;
+      background: #222;
+      border-radius: 15px;
+      margin-top: 20px;
+      overflow: hidden;
+      box-shadow: 0 0 20px #ff2d75;
+      z-index: 2;
+    }
 
-/* Corazones flotando */
-.floating-heart {
-  position: absolute;
-  color: #ff2d75;
-  font-size: 30px;
-  animation: float 3s infinite ease-in-out;
-  opacity: 0.8;
-}
-@keyframes float {
-  0% { transform: scale(1) translateY(0); }
-  50% { transform: scale(1.3) translateY(-20px); }
-  100% { transform: scale(1) translateY(0); }
-}
-</style>
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #ff2d75, #ff80b5);
+      transition: width 0.3s;
+      box-shadow: 0 0 25px #ff2d75;
+    }
+
+    /* Hoja */
+    #paper {
+      display: none;
+      position: absolute;
+      background: #f5deb3; /* Beige */
+      color: #000;
+      padding: 50px;
+      border-radius: 20px;
+      box-shadow: 0 0 30px #fff, 0 0 60px #ff2d75;
+      text-align: center;
+      max-width: 450px;
+      font-size: 22px;
+      animation: showPaper 1s ease forwards;
+      z-index: 3;
+    }
+
+    @keyframes showPaper {
+      from { opacity: 0; transform: scale(0.5); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* Flash blanco */
+    #flash {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: white;
+      z-index: 5;
+      animation: flash 3s ease;
+    }
+
+    @keyframes flash {
+      0% { opacity: 0; }
+      20% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    /* Corazones flotando */
+    .floating-heart {
+      position: absolute;
+      color: #ff2d75;
+      font-size: 30px;
+      animation: float 3s infinite ease-in-out;
+      opacity: 0.8;
+    }
+
+    @keyframes float {
+      0% { transform: scale(1) translateY(0); }
+      50% { transform: scale(1.3) translateY(-20px); }
+      100% { transform: scale(1) translateY(0); }
+    }
+  </style>
 </head>
 <body>
 
-<div id="mainHeart">❤</div>
-<div class="progress-container" id="progress-container">
-  <div class="progress-bar" id="progress"></div>
-</div>
+  <div id="mainHeart">❤</div>
+  <div class="progress-container" id="progress-container">
+    <div class="progress-bar" id="progress"></div>
+  </div>
 
-<div id="flash"></div>
+  <div id="flash"></div>
 
-<div id="paper">
-  <h2>💌 ¡Sorpresa!</h2>
-  <p>Este es tu mensaje especial ✨</p>
-</div>
+  <div id="paper">
+    <h2>💌 ¡Sorpresa!</h2>
+    <p>Este es tu mensaje especial ✨</p>
+  </div>
 
-<script>
-let clicks = 0;
-const heart = document.getElementById("mainHeart");
-const progress = document.getElementById("progress");
-const progressContainer = document.getElementById("progress-container");
-const paper = document.getElementById("paper");
-const flash = document.getElementById("flash");
+  <script>
+    let clicks = 0;
+    const heart = document.getElementById("mainHeart");
+    const progress = document.getElementById("progress");
+    const progressContainer = document.getElementById("progress-container");
+    const paper = document.getElementById("paper");
+    const flash = document.getElementById("flash");
 
-heart.addEventListener("click", () => {
-  clicks++;
-  heart.classList.add("pulse");
-  document.body.classList.add("shake");
+    heart.addEventListener("click", () => {
+      clicks++;
+      heart.classList.add("pulse");
+      document.body.classList.add("shake");
 
-  setTimeout(() => {
-    heart.classList.remove("pulse");
-    document.body.classList.remove("shake");
-  }, 400);
+      setTimeout(() => {
+        heart.classList.remove("pulse");
+        document.body.classList.remove("shake");
+      }, 400);
 
-  let percent = Math.min((clicks / 10) * 100, 100);
-  progress.style.width = percent + "%";
+      let percent = Math.min((clicks / 10) * 100, 100);
+      progress.style.width = percent + "%";
 
-  if(percent === 100) triggerFlash();
-});
+      if (percent === 100) {
+        triggerFlash();
+      }
+    });
 
-function triggerFlash(){
-  // Mostrar flash
-  flash.style.opacity = "1";
-  flash.style.visibility = "visible";
+    function triggerFlash() {
+      flash.style.display = "block";
 
-  // Quitar corazón y barra, mostrar hoja mientras dura flash
-  heart.style.display = "none";
-  progressContainer.style.display = "none";
-  paper.style.opacity = "1";
+      // Durante el flash, quitamos corazón y barra y mostramos hoja
+      heart.style.display = "none";
+      progressContainer.style.display = "none";
+      paper.style.display = "block";
 
-  setTimeout(() => {
-    // Ocultar flash al final de 3s
-    flash.style.opacity = "0";
-    flash.style.visibility = "hidden";
-  },3000);
-}
+      // Cuando termine la animación del flash, lo quitamos
+      setTimeout(() => {
+        flash.style.display = "none";
+      }, 3000);
+    }
 
-// Corazones flotando menos saturados
-function createFloatingHearts(){
-  for(let i=0;i<10;i++){ // menos corazones para no amontonar
-    let h = document.createElement("div");
-    h.className = "floating-heart";
-    h.innerHTML = "❤";
-    h.style.left = (i*10 + Math.random()*20) + "vw";
-    h.style.top = Math.random()*80 + "vh";
-    h.style.fontSize = (20 + Math.random()*20) + "px";
-    h.style.animationDuration = (2 + Math.random()*2) + "s";
-    document.body.appendChild(h);
-  }
-}
-createFloatingHearts();
-</script>
+    // Corazones flotando aleatoriamente
+    function createFloatingHearts() {
+      for (let i = 0; i < 20; i++) {
+        let h = document.createElement("div");
+        h.className = "floating-heart";
+        h.innerHTML = "❤";
+        h.style.left = Math.random() * window.innerWidth + "px";
+        h.style.top = Math.random() * window.innerHeight + "px";
+        h.style.fontSize = (20 + Math.random() * 30) + "px";
+        h.style.animationDuration = (2 + Math.random() * 2) + "s";
+        document.body.appendChild(h);
+      }
+    }
+
+    createFloatingHearts();
+  </script>
 </body>
 </html>
