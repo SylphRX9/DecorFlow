@@ -104,7 +104,7 @@
       height: 100%;
       background: white;
       z-index: 5;
-      animation: flash 3s ease; /* antes 1s, ahora 3s */
+      animation: flash 3s ease;
     }
 
     @keyframes flash {
@@ -173,12 +173,15 @@
     function triggerFlash() {
       flash.style.display = "block";
 
+      // Durante el flash, quitamos corazón y barra y mostramos hoja
+      heart.style.display = "none";
+      progressContainer.style.display = "none";
+      paper.style.display = "block";
+
+      // Cuando termine la animación del flash, lo quitamos
       setTimeout(() => {
         flash.style.display = "none";
-        heart.style.display = "none";
-        progressContainer.style.display = "none";
-        paper.style.display = "block";
-      }, 3000); // antes 1000ms, ahora 3000ms
+      }, 3000);
     }
 
     // Corazones flotando aleatoriamente
