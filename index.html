@@ -7,7 +7,7 @@
   <style>
     body {
       margin: 0;
-      height: 100vh;
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -35,22 +35,23 @@
     }
 
     .loading-heart {
-      width: 100px;
-      height: 100px;
+      width: 80px;
+      height: 80px;
       fill: #ff2d75;
       animation: pulse 1s infinite;
     }
 
     .loading-text {
-      margin-top: 20px;
-      font-size: 22px;
+      margin-top: 15px;
+      font-size: 18px;
       color: #ff2d75;
+      text-align: center;
     }
 
     .loading-bar-container {
-      margin-top: 20px;
-      width: 80%;
-      height: 15px;
+      margin-top: 15px;
+      width: 70%;
+      height: 12px;
       background: #222;
       border-radius: 10px;
       overflow: hidden;
@@ -60,7 +61,7 @@
       height: 100%;
       width: 0%;
       background: linear-gradient(90deg, #ff2d75, #ff80b5);
-      box-shadow: 0 0 20px #ff2d75;
+      box-shadow: 0 0 15px #ff2d75;
       transition: width 2s linear;
     }
 
@@ -70,27 +71,26 @@
       100% { transform: scale(1); }
     }
 
-    /* Animación shake */
     .shake {
       animation: shake 0.4s;
     }
 
     @keyframes shake {
-      0% { transform: translate(0, 0); }
-      20% { transform: translate(-10px, 0); }
-      40% { transform: translate(10px, 0); }
-      60% { transform: translate(-10px, 0); }
-      80% { transform: translate(10px, 0); }
-      100% { transform: translate(0, 0); }
+      0% { transform: translate(0,0); }
+      20% { transform: translate(-5px,0); }
+      40% { transform: translate(5px,0); }
+      60% { transform: translate(-5px,0); }
+      80% { transform: translate(5px,0); }
+      100% { transform: translate(0,0); }
     }
 
     /* Corazón principal */
     #mainHeart {
-      width: 150px;
-      height: 150px;
+      width: 120px;
+      height: 120px;
       fill: #ff2d75;
       cursor: pointer;
-      filter: drop-shadow(0 0 20px #ff80b5) drop-shadow(0 0 40px #ff2d75);
+      filter: drop-shadow(0 0 15px #ff80b5) drop-shadow(0 0 30px #ff2d75);
       transition: transform 0.2s ease;
       z-index: 2;
     }
@@ -101,13 +101,13 @@
 
     /* Barra */
     .progress-container {
-      width: 80%;
-      height: 25px;
+      width: 70%;
+      height: 18px;
       background: #222;
       border-radius: 15px;
-      margin-top: 20px;
+      margin-top: 15px;
       overflow: hidden;
-      box-shadow: 0 0 20px #ff2d75;
+      box-shadow: 0 0 15px #ff2d75;
       z-index: 2;
     }
 
@@ -116,7 +116,7 @@
       height: 100%;
       background: linear-gradient(90deg, #ff2d75, #ff80b5);
       transition: width 0.3s;
-      box-shadow: 0 0 25px #ff2d75;
+      box-shadow: 0 0 20px #ff2d75;
     }
 
     /* Hoja */
@@ -125,12 +125,12 @@
       position: absolute;
       background: #f5deb3;
       color: #000;
-      padding: 50px;
-      border-radius: 20px;
-      box-shadow: 0 0 30px #fff, 0 0 60px #ff2d75;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px #fff, 0 0 40px #ff2d75;
       text-align: center;
-      max-width: 450px;
-      font-size: 22px;
+      max-width: 90%;
+      font-size: 18px;
       animation: showPaper 1s ease forwards;
       z-index: 3;
     }
@@ -163,12 +163,22 @@
     /* Corazones de fondo */
     .background-heart {
       position: absolute;
-      width: 50px;
-      height: 50px;
+      width: 25px;
+      height: 25px;
       fill: #ff2d75;
       opacity: 0.4;
       animation: pulse 2s infinite;
       z-index: 0;
+    }
+
+    /* Media queries para móviles */
+    @media (max-width: 500px) {
+      #mainHeart { width: 90px; height: 90px; }
+      .progress-container { width: 90%; height: 15px; }
+      #paper { padding: 15px; font-size: 16px; }
+      .loading-heart { width: 60px; height: 60px; }
+      .loading-text { font-size: 16px; }
+      .loading-bar-container { width: 90%; height: 10px; }
     }
   </style>
 </head>
@@ -189,7 +199,7 @@
     </div>
   </div>
 
-  <!-- Corazones de fondo (se generarán por JS) -->
+  <!-- Corazones de fondo -->
   
   <!-- Corazón principal -->
   <svg id="mainHeart" viewBox="0 0 24 24">
@@ -220,7 +230,7 @@
   <!-- Música de fondo -->
   <audio id="bg-music" autoplay loop>
     <source src="Defondo.mp3" type="audio/mpeg">
-</audio>
+  </audio>
 
   <script>
     const heart = document.getElementById("mainHeart");
@@ -233,7 +243,6 @@
     let clicks = 0;
     let musicStarted = false;
 
-    // Pantalla de carga
     window.onload = () => {
       const loadingBar = document.querySelector(".loading-bar");
       loadingBar.style.width = "100%";
@@ -243,7 +252,6 @@
       createBackgroundHearts();
     };
 
-    // Crear corazones de fondo dispersos
     function createBackgroundHearts() {
       for(let i=0;i<25;i++){
         const h = document.createElementNS("http://www.w3.org/2000/svg","svg");
@@ -251,7 +259,7 @@
         h.setAttribute("viewBox","0 0 24 24");
         h.style.left = Math.random()*window.innerWidth + "px";
         h.style.top = Math.random()*window.innerHeight + "px";
-        h.style.width = 30 + Math.random()*30 + "px";
+        h.style.width = 15 + Math.random()*20 + "px";
         h.style.height = h.style.width;
         h.style.animationDuration = 1.5 + Math.random()*2 + "s";
         const path = document.createElementNS("http://www.w3.org/2000/svg","path");
@@ -261,22 +269,16 @@
       }
     }
 
-    // Click en corazón principal
     heart.addEventListener("click", () => {
       clicks++;
       heart.classList.add("pulse");
       document.body.classList.add("shake");
-
-      // Reproducir sonido pop
       popSound.currentTime = 0;
       popSound.play();
-
-      // Iniciar música al primer click
       if(!musicStarted){
         bgMusic.play().catch(()=>console.log("Autoplay bloqueado"));
         musicStarted = true;
       }
-
       setTimeout(()=>{
         heart.classList.remove("pulse");
         document.body.classList.remove("shake");
@@ -284,10 +286,7 @@
 
       const percent = Math.min((clicks/10)*100,100);
       progress.style.width = percent + "%";
-
-      if(percent===100){
-        triggerFlash();
-      }
+      if(percent===100){ triggerFlash(); }
     });
 
     function triggerFlash(){
@@ -295,7 +294,6 @@
       heart.style.display = "none";
       progressContainer.style.display = "none";
       paper.style.display = "block";
-
       setTimeout(()=>{ flash.style.display = "none"; },3000);
     }
   </script>
